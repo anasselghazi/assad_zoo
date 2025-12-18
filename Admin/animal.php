@@ -12,35 +12,54 @@
 <div class="flex min-h-screen">
 
     <!-- SIDEBAR -->
-    <aside class="w-64 bg-green-900 text-white p-6 space-y-8 hidden md:block">
-        <h2 class="text-3xl font-bold text-center">🦁 ASSAD</h2>
+    <aside class="w-64 bg-gradient-to-b from-green-900 to-green-700 text-white p-6 space-y-8 shadow-2xl">
+        
+        <!-- Logo -->
+        <div class="text-center">
+            <h2 class="text-3xl font-extrabold tracking-wide">🦁 ASSAD</h2>
+            <p class="text-sm text-green-200 mt-1">Admin Panel</p>
+        </div>
 
-        <nav class="flex flex-col gap-4">
-            <a href="dashboard.php" class="bg-green-700 hover:bg-green-600 p-3 rounded-xl text-center">
-                🏠 Dashboard
+        <!-- Navigation -->
+        <nav class="flex flex-col gap-4 text-sm font-semibold">
+
+            <a href="dashboard.php"
+               class="flex items-center gap-3 bg-green-600 hover:bg-green-500 transition p-3 rounded-xl">
+                🏠 <span>Dashboard</span>
             </a>
-            <a href="statistique.php" class="bg-green-700 hover:bg-green-600 p-3 rounded-xl text-center">
-                📊 Statistiques
+
+            <a href="user.php"
+               class="flex items-center gap-3 hover:bg-green-600 transition p-3 rounded-xl">
+                👥 <span>Utilisateurs</span>
             </a>
-            <a href="animals.php" class="bg-green-600 p-3 rounded-xl text-center font-bold">
-                🐾 Animaux
+
+            <a href="animal.php"
+               class="flex items-center gap-3 hover:bg-green-600 transition p-3 rounded-xl">
+                🐾 <span>Animaux</span>
             </a>
-            <a href="habitat_admin.php" class="bg-green-700 hover:bg-green-600 p-3 rounded-xl text-center">
-                🌍 Habitats
+
+            <a href="habitat.php"
+               class="flex items-center gap-3 hover:bg-green-600 transition p-3 rounded-xl">
+                🌍 <span>Habitats</span>
             </a>
-            <a href="users.php" class="bg-green-700 hover:bg-green-600 p-3 rounded-xl text-center">
-                👤 Utilisateurs
+
+            <a href="statistique.php"
+               class="flex items-center gap-3 hover:bg-green-600 transition p-3 rounded-xl">
+                📊 <span>Statistiques</span>
             </a>
-            <a href="logout.php" class="bg-red-600 hover:bg-red-500 p-3 rounded-xl text-center">
-                🚪 Déconnexion
+              <a href="logout.php"
+               class="flex items-center gap-3 hover:bg-green-600 transition p-3 rounded-xl">
+               🚪 <span> Déconnexion</span>
             </a>
         </nav>
 
-        <p class="text-center text-green-200 text-sm pt-10">
-            © 2025 Projet ASSAD
-        </p>
-    </aside>
+        <!-- Footer Sidebar -->
+        <div class="pt-10 text-center text-green-200 text-xs">
+            CAN 2025 • Maroc 🇲🇦 <br>
+            © ASSAD Zoo
+        </div>
 
+    </aside>
     <!-- MAIN -->
     <main class="flex-1 p-8">
 

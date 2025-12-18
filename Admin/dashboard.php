@@ -29,26 +29,29 @@
                 🏠 <span>Dashboard</span>
             </a>
 
-            <a href="utilisateurs.php"
+            <a href="user.php"
                class="flex items-center gap-3 hover:bg-green-600 transition p-3 rounded-xl">
                 👥 <span>Utilisateurs</span>
             </a>
 
-            <a href="animaux.php"
+            <a href="animal.php"
                class="flex items-center gap-3 hover:bg-green-600 transition p-3 rounded-xl">
                 🐾 <span>Animaux</span>
             </a>
 
-            <a href="habitats.php"
+            <a href="habitat.php"
                class="flex items-center gap-3 hover:bg-green-600 transition p-3 rounded-xl">
                 🌍 <span>Habitats</span>
             </a>
 
-            <a href="statistiques.php"
+            <a href="statistique.php"
                class="flex items-center gap-3 hover:bg-green-600 transition p-3 rounded-xl">
                 📊 <span>Statistiques</span>
             </a>
-
+              <a href="logout.php"
+               class="flex items-center gap-3 hover:bg-green-600 transition p-3 rounded-xl">
+               🚪 <span> Déconnexion</span>
+            </a>
         </nav>
 
         <!-- Footer Sidebar -->
@@ -58,7 +61,6 @@
         </div>
 
     </aside>
-
     <!-- MAIN CONTENT -->
     <main class="flex-1 p-8">
 
