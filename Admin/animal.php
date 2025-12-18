@@ -1,3 +1,47 @@
+  
+ <?php 
+ include '../connectdata/connectdata.php'; 
+              
+// ajout
+ 
+   
+if (isset($_POST['submit'])) {
+    $nom = $_POST['nom'];
+    $espece = $_POST['espece'];
+    $alimentation = $_POST['alimentation'];
+    $pays_origine = $_POST['pays_origine'];
+    $description = $_POST['description'];
+    $image = $_POST['image'];
+    $habitat = $_POST['habitat'];
+
+    
+    $sql = "INSERT INTO animaux 
+            (nom, espece, alimentation, pays_origine, description, image, habitat)
+            VALUES ('$nom', '$espece', '$alimentation', '$pays_origine', '$description', '$image', '$habitat')";
+
+    if (mysqli_query($conn, $sql)) {
+        
+        header("Location: animal.php");
+        exit();
+    } else {
+        echo "Erreur lors de l'insertion de l'animal: " . mysqli_error($conn);
+    }
+}
+?>
+
+
+
+
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
   <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -11,164 +55,123 @@
 
 <div class="flex min-h-screen">
 
-    <!-- SIDEBAR -->
+    <!-- SIDEBAR (UNCHANGED) -->
     <aside class="w-64 bg-gradient-to-b from-green-900 to-green-700 text-white p-6 space-y-8 shadow-2xl">
-        
-        <!-- Logo -->
         <div class="text-center">
             <h2 class="text-3xl font-extrabold tracking-wide">🦁 ASSAD</h2>
             <p class="text-sm text-green-200 mt-1">Admin Panel</p>
         </div>
 
-        <!-- Navigation -->
         <nav class="flex flex-col gap-4 text-sm font-semibold">
-
-            <a href="dashboard.php"
-               class="flex items-center gap-3 bg-green-600 hover:bg-green-500 transition p-3 rounded-xl">
-                🏠 <span>Dashboard</span>
-            </a>
-
-            <a href="user.php"
-               class="flex items-center gap-3 hover:bg-green-600 transition p-3 rounded-xl">
-                👥 <span>Utilisateurs</span>
-            </a>
-
-            <a href="animal.php"
-               class="flex items-center gap-3 hover:bg-green-600 transition p-3 rounded-xl">
-                🐾 <span>Animaux</span>
-            </a>
-
-            <a href="habitat.php"
-               class="flex items-center gap-3 hover:bg-green-600 transition p-3 rounded-xl">
-                🌍 <span>Habitats</span>
-            </a>
-
-            <a href="statistique.php"
-               class="flex items-center gap-3 hover:bg-green-600 transition p-3 rounded-xl">
-                📊 <span>Statistiques</span>
-            </a>
-              <a href="logout.php"
-               class="flex items-center gap-3 hover:bg-green-600 transition p-3 rounded-xl">
-               🚪 <span> Déconnexion</span>
-            </a>
+            <a href="dashboard.php" class="flex items-center gap-3 bg-green-600 p-3 rounded-xl">🏠 Dashboard</a>
+            <a href="user.php" class="flex items-center gap-3 hover:bg-green-600 p-3 rounded-xl">👥 Utilisateurs</a>
+            <a href="animal.php" class="flex items-center gap-3 hover:bg-green-600 p-3 rounded-xl">🐾 Animaux</a>
+            <a href="habitat.php" class="flex items-center gap-3 hover:bg-green-600 p-3 rounded-xl">🌍 Habitats</a>
+            <a href="statistique.php" class="flex items-center gap-3 hover:bg-green-600 p-3 rounded-xl">📊 Statistiques</a>
+            <a href="logout.php" class="flex items-center gap-3 hover:bg-green-600 p-3 rounded-xl">🚪 Déconnexion</a>
         </nav>
 
-        <!-- Footer Sidebar -->
         <div class="pt-10 text-center text-green-200 text-xs">
-            CAN 2025 • Maroc 🇲🇦 <br>
-            © ASSAD Zoo
+            CAN 2025 • Maroc 🇲🇦 <br> © ASSAD Zoo
         </div>
-
     </aside>
+
     <!-- MAIN -->
     <main class="flex-1 p-8">
 
-        <!-- HEADER -->
-        <header class="bg-white rounded-2xl shadow p-6 mb-8">
-            <h1 class="text-3xl font-bold text-green-800 text-center">
-                Gestion des Animaux
-            </h1>
-            <p class="text-center text-gray-600 mt-2">
-                Ajouter, consulter et organiser les animaux du zoo
-            </p>
+        <header class="bg-white rounded-2xl shadow p-6 mb-8 text-center">
+            <h1 class="text-3xl font-bold text-green-800">Gestion des Animaux</h1>
+            <p class="text-gray-600">Ajouter, consulter et organiser les animaux</p>
         </header>
 
-        <!-- ADD BUTTON -->
         <div class="flex justify-end mb-6">
             <button onclick="openAddModal()"
-                class="bg-green-700 hover:bg-green-800 text-white px-6 py-3 rounded-xl font-semibold shadow">
+                class="bg-green-700 hover:bg-green-800 text-white px-6 py-3 rounded-xl font-semibold">
                 ➕ Ajouter un animal
             </button>
         </div>
 
-        <!-- ANIMAUX GRID -->
-        <section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-
-            <!-- CARD Exemple -->
-            <div class="bg-white rounded-2xl shadow hover:shadow-xl transition p-6 text-center">
-                <img src="img/lion.jpg" class="w-full h-40 object-cover rounded-xl mb-4">
-                <h3 class="text-xl font-bold text-green-700 mb-2">Lion de l’Atlas</h3>
-                <p class="text-gray-600 text-sm mb-2">Espèce: Panthera leo leo</p>
-                <p class="text-gray-600 text-sm mb-2">Alimentation: Carnivore</p>
-                <p class="text-xs bg-green-100 text-green-700 px-3 py-1 rounded-full inline-block">
-                    Habitat: Savane
-                </p>
-            </div>
-
-            <div class="bg-white rounded-2xl shadow hover:shadow-xl transition p-6 text-center">
-                <img src="img/giraffe.jpg" class="w-full h-40 object-cover rounded-xl mb-4">
-                <h3 class="text-xl font-bold text-green-700 mb-2">Girafe</h3>
-                <p class="text-gray-600 text-sm mb-2">Espèce: Giraffa camelopardalis</p>
-                <p class="text-gray-600 text-sm mb-2">Alimentation: Herbivore</p>
-                <p class="text-xs bg-green-100 text-green-700 px-3 py-1 rounded-full inline-block">
-                    Habitat: Savane
-                </p>
-            </div>
-
-        </section>
-
     </main>
 </div>
 
-<!-- ADD ANIMAL MODAL -->
+<!-- POPUP (SMALL & CLEAN) -->
 <div id="addModal" class="fixed inset-0 bg-black bg-opacity-60 hidden items-center justify-center z-50">
 
-    <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md p-6 relative">
+    <div class="bg-white rounded-xl shadow-xl w-full max-w-sm p-4 relative">
 
         <button onclick="closeAddModal()"
-            class="absolute top-3 right-3 text-gray-500 hover:text-red-600 text-xl font-bold">
+            class="absolute top-2 right-3 text-gray-500 hover:text-red-600 text-lg font-bold">
             ✕
         </button>
 
-        <h2 class="text-2xl font-bold text-green-700 mb-5">
+        <h2 class="text-lg font-bold text-green-700 mb-3 text-center">
             ➕ Ajouter un animal
         </h2>
 
-        <form action="animal_store.php" method="POST" class="space-y-4">
+        <form action="animal_store.php" method="POST" class="space-y-2 text-sm">
 
-            <input type="text" name="nom" placeholder="Nom de l’animal"
-                   class="w-full border rounded-xl p-3" required>
+            <input type="text" name="nom" placeholder="Nom"
+                   class="w-full border rounded-lg p-2" required>
 
             <input type="text" name="espece" placeholder="Espèce"
-                   class="w-full border rounded-xl p-3" required>
+                   class="w-full border rounded-lg p-2" required>
+       
 
-            <input type="text" name="aliment" placeholder="Alimentation"
-                   class="w-full border rounded-xl p-3" required>
+              <select name="alimentation" class="w-full p-2 border rounded-xl">
+                    <option value="">Type alimentaire</option>
+                    <option value="Carnivore">Carnivore</option>
+                    <option value="Herbivore">Herbivore</option>
+                    <option value="Omnivore">Omnivore</option>
+                </select>
 
-            <input type="text" name="habitat" placeholder="Habitat"
-                   class="w-full border rounded-xl p-3" required>
+             
 
-            <input type="text" name="image" placeholder="URL de l'image"
-                   class="w-full border rounded-xl p-3" required>
+            <input type="text" name="pays_origine" placeholder="Pays d’origine"
+                   class="w-full border rounded-lg p-2" required>
 
-            <div class="flex justify-end gap-3 pt-4">
+            <select name="id_habitat"  class="w-full p-2 border rounded-xl">
+                    <option value="">Habitat</option>
+                    <option value = "">Savane</option>
+                    <option value ="">Jungle</option>
+                    <option value="">Désert</option>
+                    <option value="">Océan</option>
+                </select>
+
+            <input type="text" name="image" placeholder="Image (URL)"
+                   class="w-full border rounded-lg p-2" required>
+
+            <textarea name="description" placeholder="Description"
+                      class="w-full border rounded-lg p-2 h-14" required></textarea>
+
+            <div class="flex justify-end gap-2 pt-2">
                 <button type="button" onclick="closeAddModal()"
-                        class="px-5 py-2 rounded-xl border">
+                        class="px-3 py-1 border rounded-lg">
                     Annuler
                 </button>
 
                 <button type="submit"
-                        class="bg-green-700 hover:bg-green-800 text-white px-5 py-2 rounded-xl">
+                        class="bg-green-700 hover:bg-green-800 text-white px-3 py-1 rounded-lg">
                     Enregistrer
                 </button>
             </div>
+
         </form>
 
     </div>
 </div>
 
 <script>
-    const addModal = document.getElementById("addModal");
+const addModal = document.getElementById("addModal");
 
-    function openAddModal() {
-        addModal.classList.remove("hidden");
-        addModal.classList.add("flex");
-    }
+function openAddModal() {
+    addModal.classList.remove("hidden");
+    addModal.classList.add("flex");
+}
 
-    function closeAddModal() {
-        addModal.classList.add("hidden");
-        addModal.classList.remove("flex");
-    }
+function closeAddModal() {
+    addModal.classList.add("hidden");
+    addModal.classList.remove("flex");
+}
 </script>
 
 </body>

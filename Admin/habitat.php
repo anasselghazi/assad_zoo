@@ -1,3 +1,31 @@
+ 
+<?php 
+include '../connectdata/connectdata.php';
+
+if (isset($_POST['submit'])) {
+    $nom = $_POST['nom'];
+    $climate = $_POST['type_climat'];
+    $zon = $_POST['zone_zoo'];
+    $description = $_POST['description'];
+
+    $sql = "INSERT INTO habitats (nom, type_climat, zone_zoo, description)
+            VALUES ('$nom', '$climate', '$zon', '$description')";
+
+    if (mysqli_query($conn, $sql)) {
+        header("Location: habitat.php?success=1");
+        exit();
+    } else {
+        echo "Erreur : " . mysqli_error($conn);
+    }
+}
+?>
+
+
+
+
+
+
+
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -134,17 +162,17 @@
             ➕ Ajouter un habitat
         </h2>
 
-        <form action="habitat_store.php" method="POST" class="space-y-4">
+        <form action="habitat.php" method="POST" class="space-y-4">
 
             <input type="text" name="nom"
                 placeholder="Nom de l’habitat"
                 class="w-full border rounded-xl p-3" required>
 
-            <input type="text" name="climat"
+            <input type="text" name="type_climat"
                 placeholder="Type de climat"
                 class="w-full border rounded-xl p-3" required>
 
-            <input type="text" name="zone"
+            <input type="text" name="zone_zoo"
                 placeholder="Zone du zoo"
                 class="w-full border rounded-xl p-3" required>
 
@@ -159,7 +187,7 @@
                     Annuler
                 </button>
 
-                <button type="submit"
+                <button type="submit" name ="submit"
                     class="bg-green-700 hover:bg-green-800 text-white px-5 py-2 rounded-xl">
                     Enregistrer
                 </button>
