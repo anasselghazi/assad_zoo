@@ -2,7 +2,7 @@
  <?php 
  include '../connectdata/connectdata.php'; 
               
-// ajout
+/*ajout*/
  
    
 if (isset($_POST['submit'])) {
@@ -12,11 +12,11 @@ if (isset($_POST['submit'])) {
     $pays_origine = $_POST['pays_origine'];
     $description = $_POST['description'];
     $image = $_POST['image'];
-    $habitat = $_POST['habitat'];
+    $habitat = $_POST['id_habitat'];
 
     
     $sql = "INSERT INTO animaux 
-            (nom, espece, alimentation, pays_origine, description, image, habitat)
+            (nom, espece, alimentation, pays_origine, description, image, id_habitat)
             VALUES ('$nom', '$espece', '$alimentation', '$pays_origine', '$description', '$image', '$habitat')";
 
     if (mysqli_query($conn, $sql)) {
@@ -27,6 +27,36 @@ if (isset($_POST['submit'])) {
         echo "Erreur lors de l'insertion de l'animal: " . mysqli_error($conn);
     }
 }
+
+/* affichage */
+  
+$sql_animaux = "
+    SELECT 
+        a.id_animal,
+        a.nom,
+        a.espece,
+        a.alimentation,
+        a.pays_origine,
+        a.image,
+        h.nom
+    FROM animaux AS a
+    INNER JOIN habitats AS h 
+        ON a.id_habitat = h.id_habitat
+    ORDER BY a.id_animal DESC
+";
+
+$result_animaux = mysqli_query($conn, $sql_animaux);
+
+
+if (!$result_animaux) {
+    die("Erreur SQL: " . mysqli_error($conn));
+}
+ 
+
+
+
+
+
 ?>
 
 
@@ -90,6 +120,63 @@ if (isset($_POST['submit'])) {
                 ➕ Ajouter un animal
             </button>
         </div>
+<div class="bg-white rounded-2xl shadow p-6">
+    <h2 class="text-xl font-bold text-green-800 mb-4">📋 Liste des Animaux</h2>
+
+    <div class="overflow-x-auto">
+        <table class="w-full text-sm text-left border-collapse">
+            <thead>
+                <tr class="bg-green-700 text-white">
+                    <th class="p-3">Image</th>
+                    <th class="p-3">Nom</th>
+                    <th class="p-3">Espèce</th>
+                    <th class="p-3">Alimentation</th>
+                    <th class="p-3">Pays</th>
+                    <th class="p-3">Habitat</th>
+                    <th class="p-3 text-center">Actions</th>
+                </tr>
+            </thead>
+
+            <tbody class="divide-y">
+                <?php if ($result_animaux && mysqli_num_rows($result_animaux) > 0): ?>
+                    <?php while ($animal = mysqli_fetch_assoc($result_animaux)): ?>
+                        <tr class="hover:bg-gray-50">
+                            <td class="p-3">
+                                <img src="<?= $animal['image']; ?>" 
+                                     class="w-16 h-16 object-cover rounded-lg">
+                            </td>
+
+                            <td class="p-3 font-semibold"><?= $animal['nom']; ?></td>
+                            <td class="p-3"><?= $animal['espece']; ?></td>
+                            <td class="p-3"><?= $animal['alimentation']; ?></td>
+                            <td class="p-3"><?= $animal['pays_origine']; ?></td>
+                            <td class="p-3"><?= $animal['nom']; ?></td>
+
+                            <td class="p-3 text-center space-x-2">
+                                <a href="edit_animal.php?id=<?= $animal['id_animal']; ?>"
+                                   class="bg-blue-600 text-white px-3 py-1 rounded-lg text-xs">
+                                   ✏️
+                                </a>
+
+                                <a href="delete_animal.php?id=<?= $animal['id_animal']; ?>"
+                                   onclick="return confirm('Supprimer cet animal ?')"
+                                   class="bg-red-600 text-white px-3 py-1 rounded-lg text-xs">
+                                   🗑️
+                                </a>
+                            </td>
+                        </tr>
+                    <?php endwhile; ?>
+                <?php else: ?>
+                    <tr>
+                        <td colspan="7" class="p-4 text-center text-gray-500">
+                            Aucun animal trouvé
+                        </td>
+                    </tr>
+                <?php endif; ?>
+            </tbody>
+        </table>
+    </div>
+</div>
 
     </main>
 </div>
@@ -108,7 +195,7 @@ if (isset($_POST['submit'])) {
             ➕ Ajouter un animal
         </h2>
 
-        <form action="animal_store.php" method="POST" class="space-y-2 text-sm">
+        <form action="animal.php" method="POST" class="space-y-2 text-sm">
 
             <input type="text" name="nom" placeholder="Nom"
                    class="w-full border rounded-lg p-2" required>
@@ -131,7 +218,7 @@ if (isset($_POST['submit'])) {
 
             <select name="id_habitat"  class="w-full p-2 border rounded-xl">
                     <option value="">Habitat</option>
-                    <option value = "">Savane</option>
+                    <option value = "4">Savane</option>
                     <option value ="">Jungle</option>
                     <option value="">Désert</option>
                     <option value="">Océan</option>
@@ -149,7 +236,7 @@ if (isset($_POST['submit'])) {
                     Annuler
                 </button>
 
-                <button type="submit"
+                <button type="submit" name="submit"
                         class="bg-green-700 hover:bg-green-800 text-white px-3 py-1 rounded-lg">
                     Enregistrer
                 </button>

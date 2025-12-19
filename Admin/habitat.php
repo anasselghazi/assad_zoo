@@ -41,7 +41,26 @@ if(isset($_POST['delete']) && isset($_POST['id_habitat'])) {
     }
 }
 
+ /*edit*/
+if (isset($_POST['update'])) {
+    $id = $_POST['edit_id'];
+    $nom = $_POST['edit_nom'];
+    $climat = $_POST['edit_type_climat'];
+    $zone = $_POST['edit_zone_zoo'];
+    $description = $_POST['edit_description'];
 
+     
+    $update_sql = "UPDATE habitats 
+                   SET nom='$nom', type_climat='$climat', zone_zoo='$zone', description='$description'
+                   WHERE id_habitat='$id'";
+
+    if (mysqli_query($conn, $update_sql)) {
+        header("Location: habitat.php?updated=1");
+        exit();
+    } else {
+        echo "Erreur lors de la modification : " . mysqli_error($conn);
+    }
+}
 
 
 
@@ -116,10 +135,18 @@ if(isset($_POST['delete']) && isset($_POST['id_habitat'])) {
 
     <!-- ACTIONS -->
     <div class="flex justify-end gap-2 mt-4">
-        <a href="habitat_edit.php?id=<?= $row['id_habitat']; ?>"
-           class="px-4 py-1 bg-blue-600 text-white rounded-lg text-sm">
-            ✏️ Edit
-        </a>
+<button 
+    onclick="openEditModal(
+        <?= $row['id_habitat']; ?>,
+        '<?= addslashes($row['nom']); ?>',
+        '<?= addslashes($row['type_climat']); ?>',
+        '<?= addslashes($row['zone_zoo']); ?>',
+        '<?= addslashes($row['description']); ?>'
+    )"
+    class="px-4 py-1 bg-blue-600 text-white rounded-lg text-sm">
+    ✏️ Edit
+</button>
+
 
         <form method="POST" onsubmit="return confirm('Voulez-vous vraiment supprimer cet habitat ?');">
     <input type="hidden" name="id_habitat" value="<?= $row['id_habitat']; ?>">
@@ -164,6 +191,31 @@ if(isset($_POST['delete']) && isset($_POST['id_habitat'])) {
 
 </div>
 </div>
+<!-- EDIT MODAL -->
+<div id="editModal" class="fixed inset-0 bg-black bg-opacity-60 hidden items-center justify-center z-50">
+    <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md p-6 relative">
+        <button onclick="closeEditModal()" class="absolute top-3 right-3 text-gray-500 hover:text-red-600 text-xl font-bold">
+            ✕
+        </button>
+
+        <h2 class="text-2xl font-bold text-green-700 mb-5">✏️ Modifier un habitat</h2>
+
+        <form method="POST" action="habitat.php" class="space-y-4">
+            <input type="hidden" name="edit_id" id="edit_id">
+
+            <input type="text" name="edit_nom" id="edit_nom" placeholder="Nom de l’habitat" class="w-full border rounded-xl p-3" required>
+            <input type="text" name="edit_type_climat" id="edit_type_climat" placeholder="Type de climat" class="w-full border rounded-xl p-3" required>
+            <input type="text" name="edit_zone_zoo" id="edit_zone_zoo" placeholder="Zone du zoo" class="w-full border rounded-xl p-3" required>
+            <textarea name="edit_description" id="edit_description" rows="3" placeholder="Description" class="w-full border rounded-xl p-3"></textarea>
+
+            <div class="flex justify-end gap-3 pt-4">
+                <button type="button" onclick="closeEditModal()" class="px-5 py-2 rounded-xl border">Annuler</button>
+                <button type="submit" name="update" class="bg-blue-700 hover:bg-blue-800 text-white px-5 py-2 rounded-xl">Enregistrer</button>
+            </div>
+        </form>
+    </div>
+</div>
+
 
 <script>
 function openAddModal() {
@@ -174,6 +226,34 @@ function closeAddModal() {
     addModal.classList.add("hidden");
     addModal.classList.remove("flex");
 }
+
+
+function openEditModal(id, nom, climat, zone, description) {
+    document.getElementById('edit_id').value = id;
+    document.getElementById('edit_nom').value = nom;
+    document.getElementById('edit_type_climat').value = climat;
+    document.getElementById('edit_zone_zoo').value = zone;
+    document.getElementById('edit_description').value = description;
+
+    const editModal = document.getElementById('editModal');
+    editModal.classList.remove('hidden');
+    editModal.classList.add('flex');
+}
+
+function closeEditModal() {
+    const editModal = document.getElementById('editModal');
+    editModal.classList.add('hidden');
+    editModal.classList.remove('flex');
+}
+
+
+
+
+
+
+
+
+
 </script>
 
 </body>
