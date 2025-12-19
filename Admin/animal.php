@@ -31,14 +31,16 @@ if (isset($_POST['submit'])) {
 /* affichage */
   
 $sql_animaux = "
-    SELECT 
+       SELECT 
         a.id_animal,
         a.nom,
         a.espece,
         a.alimentation,
         a.pays_origine,
+        a.description,
         a.image,
-        h.nom
+        a.id_habitat,
+        h.nom_habitat
     FROM animaux AS a
     INNER JOIN habitats AS h 
         ON a.id_habitat = h.id_habitat
@@ -51,7 +53,46 @@ $result_animaux = mysqli_query($conn, $sql_animaux);
 if (!$result_animaux) {
     die("Erreur SQL: " . mysqli_error($conn));
 }
- 
+ /*delete*/
+ if(isset($_POST['delete']) && isset($_POST['id_animal'])){
+    $id = ($_POST['id_animal']);   
+    $sql = "DELETE FROM animaux WHERE id_animal = $id";
+
+    if(mysqli_query($conn, $sql)){
+        header("Location: animal.php?delete=1");
+        exit();
+    } else {
+        echo "Erreur : " . mysqli_error($conn);
+    }
+}
+/*edit*/
+if(isset($_POST['update'])) {
+    $id = $_POST['edit_id_animal'];
+    $nom = $_POST['edit_nom'];
+    $espece = $_POST['edit_espece'];
+    $alimentation = $_POST['edit_alimentation'];
+    $pays = $_POST['edit_pays_origine'];
+    $habitat = $_POST['edit_id_habitat'];
+    $image = $_POST['edit_image'];
+    $description = $_POST['edit_description'];
+
+    $sql_update = "UPDATE animaux SET 
+        nom='$nom',
+        espece='$espece',
+        alimentation='$alimentation',
+        pays_origine='$pays',
+        id_habitat='$habitat',
+        image='$image',
+        description='$description'
+        WHERE id_animal='$id'";
+
+    if(mysqli_query($conn, $sql_update)){
+        header("Location: animal.php?updated=1");
+        exit();
+    } else {
+        echo "Erreur: " . mysqli_error($conn);
+    }
+}
 
 
 
@@ -150,19 +191,34 @@ if (!$result_animaux) {
                             <td class="p-3"><?= $animal['espece']; ?></td>
                             <td class="p-3"><?= $animal['alimentation']; ?></td>
                             <td class="p-3"><?= $animal['pays_origine']; ?></td>
-                            <td class="p-3"><?= $animal['nom']; ?></td>
+                            <td class="p-3"><?= $animal['nom_habitat']; ?></td>
 
                             <td class="p-3 text-center space-x-2">
-                                <a href="edit_animal.php?id=<?= $animal['id_animal']; ?>"
-                                   class="bg-blue-600 text-white px-3 py-1 rounded-lg text-xs">
-                                   ✏️
-                                </a>
+                                <!--edit-->
+                                <button 
+                       onclick="openEditModal(
+                  <?= $animal['id_animal']; ?>,
+                  '<?= addslashes($animal['nom']); ?>',
+                 '<?= addslashes($animal['espece']); ?>',
+                  '<?= addslashes($animal['alimentation']); ?>',
+                  '<?= addslashes($animal['pays_origine']); ?>',
+                 '<?= $animal['id_habitat']; ?>',
+                 '<?= addslashes($animal['description']); ?>',
+                '<?= addslashes($animal['image']); ?>'
+    )"
+    class="bg-blue-600 text-white px-3 py-1 rounded-lg text-xs">
+    ✏️
+</button>
 
-                                <a href="delete_animal.php?id=<?= $animal['id_animal']; ?>"
-                                   onclick="return confirm('Supprimer cet animal ?')"
-                                   class="bg-red-600 text-white px-3 py-1 rounded-lg text-xs">
-                                   🗑️
-                                </a>
+
+                                <form method="POST"  action="animal.php" style="display:inline;" 
+                                onsubmit="return confirm('Voulez-vous vraiment supprimer cet animal ?');">
+                               <input type="hidden" name="id_animal" value="<?= $animal['id_animal']; ?>">
+                               <button type="submit" name="delete" 
+                                class="bg-red-600 text-white px-3 py-1 rounded-lg text-xs">
+                              🗑️
+                               </button>
+    </form>
                             </td>
                         </tr>
                     <?php endwhile; ?>
@@ -216,13 +272,16 @@ if (!$result_animaux) {
             <input type="text" name="pays_origine" placeholder="Pays d’origine"
                    class="w-full border rounded-lg p-2" required>
 
-            <select name="id_habitat"  class="w-full p-2 border rounded-xl">
-                    <option value="">Habitat</option>
-                    <option value = "4">Savane</option>
-                    <option value ="">Jungle</option>
-                    <option value="">Désert</option>
-                    <option value="">Océan</option>
-                </select>
+                 <select name="id_habitat" class="w-full p-2 border rounded-xl">
+                 <option value="">Sélectionnez un habitat</option>
+                 <?php
+                  $habitats = mysqli_query($conn, "SELECT id_habitat, nom_habitat FROM habitats");
+                 while($h = mysqli_fetch_assoc($habitats)){
+                echo "<option value='{$h['id_habitat']}'>{$h['nom_habitat']}</option>";
+             }
+           ?>
+       </select>
+
 
             <input type="text" name="image" placeholder="Image (URL)"
                    class="w-full border rounded-lg p-2" required>
@@ -246,6 +305,43 @@ if (!$result_animaux) {
 
     </div>
 </div>
+<div id="editAnimalModal" class="fixed inset-0 bg-black bg-opacity-60 hidden items-center justify-center z-50">
+    <div class="bg-white rounded-xl shadow-xl w-full max-w-sm p-6 relative">
+        <button onclick="closeEditAnimalModal()" class="absolute top-2 right-3 text-gray-500 hover:text-red-600 text-lg font-bold">
+            ✕
+        </button>
+
+        <h2 class="text-lg font-bold text-green-700 mb-3 text-center">✏️ Modifier un animal</h2>
+
+        <form method="POST" action="animal.php" class="space-y-2">
+            <input type="hidden" name="edit_id_animal" id="edit_id_animal">
+
+            <input type="text" name="edit_nom" id="edit_nom" placeholder="Nom" class="w-full border rounded-lg p-2" required>
+            <input type="text" name="edit_espece" id="edit_espece" placeholder="Espèce" class="w-full border rounded-lg p-2" required>
+            <select name="edit_alimentation" id="edit_alimentation" class="w-full border rounded-lg p-2" required>
+                <option value="Carnivore">Carnivore</option>
+                <option value="Herbivore">Herbivore</option>
+                <option value="Omnivore">Omnivore</option>
+            </select>
+            <input type="text" name="edit_pays_origine" id="edit_pays_origine" placeholder="Pays d’origine" class="w-full border rounded-lg p-2" required>
+            <select name="edit_id_habitat" id="edit_id_habitat" class="w-full border rounded-lg p-2" required>
+                 <?php
+                $habitats = mysqli_query($conn, "SELECT id_habitat, nom_habitat FROM habitats");
+                while($h = mysqli_fetch_assoc($habitats)){
+                    echo "<option value='{$h['id_habitat']}'>{$h['nom_habitat']}</option>";
+                }
+                ?>
+            </select>
+            <input type="text" name="edit_image" id="edit_image" placeholder="Image (URL)" class="w-full border rounded-lg p-2" required>
+            <textarea name="edit_description" id="edit_description" placeholder="Description" class="w-full border rounded-lg p-2 h-14"></textarea>
+
+            <div class="flex justify-end gap-2 pt-2">
+                <button type="button" onclick="closeEditAnimalModal()" class="px-3 py-1 border rounded-lg">Annuler</button>
+                <button type="submit" name="update" class="bg-green-700 hover:bg-green-800 text-white px-3 py-1 rounded-lg">Enregistrer</button>
+            </div>
+        </form>
+    </div>
+</div>
 
 <script>
 const addModal = document.getElementById("addModal");
@@ -259,6 +355,29 @@ function closeAddModal() {
     addModal.classList.add("hidden");
     addModal.classList.remove("flex");
 }
+function openEditModal(id, nom, espece, alimentation, pays, habitat, description, image) {
+    document.getElementById('edit_id_animal').value = id;
+    document.getElementById('edit_nom').value = nom;
+    document.getElementById('edit_espece').value = espece;
+    document.getElementById('edit_alimentation').value = alimentation;
+    document.getElementById('edit_pays_origine').value = pays;
+    document.getElementById('edit_id_habitat').value = habitat;
+    document.getElementById('edit_description').value = description;
+    document.getElementById('edit_image').value = image;
+
+    const modal = document.getElementById('editAnimalModal');
+    modal.classList.remove('hidden');
+    modal.classList.add('flex');
+}
+
+function closeEditAnimalModal() {
+    const modal = document.getElementById('editAnimalModal');
+    modal.classList.add('hidden');
+    modal.classList.remove('flex');
+}
+
+
+
 </script>
 
 </body>

@@ -3,12 +3,12 @@ include '../connectdata/connectdata.php';
 
 /* AJOUT */
 if (isset($_POST['submit'])) {
-    $nom = $_POST['nom'];
+    $nom = $_POST['nom_habitat'];
     $climate = $_POST['type_climat'];
     $zone = $_POST['zone_zoo'];
     $description = $_POST['description'];
 
-    $sql = "INSERT INTO habitats (nom, type_climat, zone_zoo, description)
+    $sql = "INSERT INTO habitats (nom_habitat, type_climat, zone_zoo, description)
             VALUES ('$nom', '$climate', '$zone', '$description')";
 
     if (mysqli_query($conn, $sql)) {
@@ -51,7 +51,7 @@ if (isset($_POST['update'])) {
 
      
     $update_sql = "UPDATE habitats 
-                   SET nom='$nom', type_climat='$climat', zone_zoo='$zone', description='$description'
+                   SET nom_habitat='$nom', type_climat='$climat', zone_zoo='$zone', description='$description'
                    WHERE id_habitat='$id'";
 
     if (mysqli_query($conn, $update_sql)) {
@@ -118,7 +118,7 @@ if (isset($_POST['update'])) {
 
 <div class="bg-white rounded-2xl shadow p-6 hover:shadow-xl transition">
     <h3 class="text-xl font-bold text-green-700 mb-2">
-        <?= $row['nom']; ?>
+        <?= $row['nom_habitat']; ?>
     </h3>
 
     <p class="text-gray-600 text-sm mb-3">
@@ -138,7 +138,7 @@ if (isset($_POST['update'])) {
 <button 
     onclick="openEditModal(
         <?= $row['id_habitat']; ?>,
-        '<?= addslashes($row['nom']); ?>',
+        '<?= addslashes($row['nom_habitat']); ?>',
         '<?= addslashes($row['type_climat']); ?>',
         '<?= addslashes($row['zone_zoo']); ?>',
         '<?= addslashes($row['description']); ?>'
@@ -174,7 +174,7 @@ if (isset($_POST['update'])) {
 <button onclick="closeAddModal()" class="absolute top-3 right-3 text-xl">✕</button>
 
 <form method="POST" class="space-y-4">
-    <input type="text" name="nom" placeholder="Nom" class="w-full border p-3 rounded-xl" required>
+    <input type="text" name="nom_habitat" placeholder="Nom" class="w-full border p-3 rounded-xl" required>
     <input type="text" name="type_climat" placeholder="Type climat" class="w-full border p-3 rounded-xl" required>
     <input type="text" name="zone_zoo" placeholder="Zone zoo" class="w-full border p-3 rounded-xl" required>
     <textarea name="description" rows="3" placeholder="Description"
